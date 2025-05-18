@@ -286,3 +286,19 @@ if (prediction[0]==0):
   print('The news is Real')
 else:
   print('The news is Fake')
+
+!pip install vaderSentiment gradio imbalanced-learn
+import gradio as gr
+def predict_news(text, title=""):
+    content = preprocess_text(title + " " + text)
+    vector = tfidf_vectorizer.transform([content])
+    pred = model.predict(vector)[0]
+    return "Real News" if pred == 1 else "Fake News"
+
+gr.Interface(
+    fn=predict_news,
+    inputs=[gr.Textbox(lines=5, label="News Content"), gr.Textbox(lines=1, label="News Title (optional)")],
+    outputs="text",
+    title="Fake News Detector",
+    description="Enter the news content and (optionally) title to check if it's Real or Fake."
+).launch(debug=True, share=True)
